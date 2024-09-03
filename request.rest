@@ -8,8 +8,19 @@ POST http://localhost:3003/videos
 Content-Type: application/json
 
 {
-    "id": "v003",
-    "title": "Knex em 30 segundos",
-    "time_segunds": 300
+    "id": "v004",
+    "title": "LLMs",
+    "time_segunds": 1500
 }
+###
+
+PUT  http://localhost:3003/videos/v004
+Content-Type: application/json
+
+{
+    "title": "Teste de IA"
+}
+###
+
+DELETE http://localhost:3003/videos/v004
 ###

@@ -101,8 +101,6 @@ app.post("/videos", async (req: Request, res: Response) => {
             upload_date: newVideo.getUploadDate()
         }
 
-        console.log(newVideoDB)
-
         await db('videos').insert(newVideoDB)
 
         res.status(201).send("Vídeo cadastrado com sucesso!")
@@ -125,13 +123,23 @@ app.post("/videos", async (req: Request, res: Response) => {
 app.put("/videos/:id", async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string || undefined
-        const valueTitle = req.body.title as string || undefined
-        const valueTimeSegunds = req.body.time_segunds as number || undefined
+        const newTitle = req.body.title as string || undefined
+        const newTimeSegunds = req.body.time_segunds as number || undefined
 
         if (typeof id !== "string") {
             res.status(400)
             throw new Error("'Id' deve ser uma string")
         }
+
+        /* if (typeof newTitle !== "string") {
+            res.status(400)
+            throw new Error("'newTitle' deve ser uma string")
+        }
+
+        if (typeof newTimeSegunds !== "number") {
+            res.status(400)
+            throw new Error("'newTimeSegunds' deve ser um number")
+        } */
 
         const [videoDB]: TVideosDB[] | undefined[] = await db('videos').where({ id })
 
@@ -147,10 +155,47 @@ app.put("/videos/:id", async (req: Request, res: Response) => {
             videoDB.upload_date
         )
 
+        const uploadVideoDB = {
+            id: uploadVideo.getId(),
+            title: newTitle || uploadVideo.getTiTle(),
+            time_segunds: newTimeSegunds || uploadVideo.getTimeSegunds(),
+            upload_date: uploadVideo.getUploadDate()
+        }
 
+        await db('videos').update(uploadVideoDB).where({id})
 
+        res.status(201).send("Vídeo atualizado com sucesso!")
 
+    } catch (error) {
+        console.log(error)
 
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})
+
+app.delete("/videos/:id", async (req: Request, res: Response) => {
+    try{
+        const idToDelete = req.params.id
+        
+        const [video] = await db('videos').where({id: idToDelete})
+        
+        if (!video) {
+            res.status(400)
+            throw new Error ("Video não encontrado!")
+        }
+
+        await db('videos').del().where({id: idToDelete})
+        
+        res.status(200).send("Vídeo deletado com sucesso!")
+        
     } catch (error) {
         console.log(error)
 
