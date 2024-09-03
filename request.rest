@@ -1,0 +1,15 @@
+GET http://localhost:3003/ping
+###
+
+GET http://localhost:3003/videos
+###
+
+POST http://localhost:3003/videos
+Content-Type: application/json
+
+{
+    "id": "v003",
+    "title": "Knex em 30 segundos",
+    "time_segunds": 300
+}
+###
